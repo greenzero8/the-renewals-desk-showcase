@@ -11,6 +11,13 @@ This repository is a **portfolio showcase** (product narrative and architecture)
 One question to start. The desk takes the company website and the tool under review, then researches
 both from public sources before it begins asking anything that needs a human answer.
 
+![An intake conversation: the desk asks what the tool is used for and what prompted the review, then asks about cost, contract end date, auto-renewal and notice, and who holds approval authority](docs/conversation.png)
+
+Intake asks only what could change the recommendation, and follows up on the answers rather than
+working through a fixed form. Commercial arithmetic is done in application code, not by the model —
+here it turns a quoted 22% increase into the actual renewal figure. The example above uses a
+fictional company.
+
 ---
 
 ## Problem
