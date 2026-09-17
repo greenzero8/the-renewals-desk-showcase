@@ -6,6 +6,11 @@ A focused web chatbot that helps marketing operations and martech leaders decide
 
 This repository is a **portfolio showcase** (product narrative and architecture). Application source code is private.
 
+![The Renewals Desk opening screen: the wordmark, the line "Make an informed decision about your next marketing technology renewal", and a single text box asking for your website and the tool under review](docs/landing.png)
+
+One question to start. The desk takes the company website and the tool under review, then researches
+both from public sources before it begins asking anything that needs a human answer.
+
 ---
 
 ## Problem
