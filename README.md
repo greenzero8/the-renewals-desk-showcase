@@ -6,17 +6,13 @@ A focused web chatbot that helps marketing operations and martech leaders decide
 
 This repository is a **portfolio showcase** (product narrative and architecture). Application source code is private.
 
-![The Renewals Desk opening screen: the wordmark, the line "Make an informed decision about your next marketing technology renewal", and a single text box asking for your website and the tool under review](docs/landing.png)
+![The Renewals Desk opening screen: the wordmark, the opening question, the reply box, and a footer naming the builder and the OpenAI models in use](docs/landing.png)
 
-One question to start. The desk takes the company website and the tool under review, then researches
-both from public sources before it begins asking anything that needs a human answer.
+One question to start. The desk asks for the company website and the tool under review. Public research on the company and the vendor runs in the background at set points in the review. Those findings go into the evidence record. They are not pasted into the chat.
 
 ![An intake conversation: the desk asks what the tool is used for and what prompted the review, then asks about cost, contract end date, auto-renewal and notice, and who holds approval authority](docs/conversation.png)
 
-Intake asks only what could change the recommendation, and follows up on the answers rather than
-working through a fixed form. Commercial arithmetic is done in application code, not by the model —
-here it turns a quoted 22% increase into the actual renewal figure. The example above uses a
-fictional company.
+Intake asks only what could change the recommendation, and follows up on the answers rather than working through a fixed form. Commercial arithmetic is done in application code, not by the model. In this example a quoted 22% increase becomes the renewal figure. The company is fictional.
 
 ---
 
@@ -26,16 +22,16 @@ Renewal decisions are hard when evidence is incomplete and spread across Marketi
 
 ## What it does
 
-1. **Intake conversation** — Asks for the company (or website) and the tool under review, then gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context through consequential follow-ups (typed or pasted text only; no file uploads).
-2. **Structured evidence** — Maintains an in-session evidence record with value, source, and state (answered, unknown, conflicting, not yet asked). Does not invent missing contract terms.
-3. **Public research** — At defined milestones, researches the company and the vendor/product into the evidence record (with sources), without dumping research into the chat.
-4. **Deterministic deadline math** — Calculates notice deadlines and runway in application code (not via the language model), and surfaces timing when it materially matters.
-5. **Formal assessment** — A separate assessment pass produces a compact write-up:
+1. **Intake conversation.** Asks for the company (or website) and the tool under review, then gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context through consequential follow-ups (typed or pasted text only; no file uploads).
+2. **Structured evidence.** Maintains an in-session evidence record with value, source, and state (answered, unknown, conflicting, not yet asked). Does not invent missing contract terms.
+3. **Public research.** At defined milestones, researches the company and the vendor/product into the evidence record (with sources), without dumping research into the chat.
+4. **Deterministic deadline math.** Calculates notice deadlines and runway in application code (not via the language model), and surfaces timing when it materially matters.
+5. **Formal assessment.** A separate assessment pass produces a compact write-up:
    - Immediate contract action (renew, renegotiate, extend, defer, or do not renew)
    - Longer-term direction (retain, sunset, consolidate, or investigate further)
    - Reasoning and evidence (supported, provisional, or insufficient information)
    - Action plan with owners and next steps
-6. **Revision** — New evidence updates the recommendation; older assessments are superseded in the thread.
+6. **Revision.** New evidence updates the recommendation; older assessments are superseded in the thread.
 
 Sessions are **not saved** after the tab closes. Organizational approval stays with the user.
 
@@ -77,7 +73,7 @@ Sessions are **not saved** after the tab closes. Organizational approval stays w
 | Choice | Why |
 |--------|-----|
 | Intake and assessment are separate passes | Questions stay investigative; the formal write-up stays compact and consistent |
-| Deadline arithmetic is deterministic | Avoids LLM date errors; runway uses the user’s local calendar date |
+| Deadline arithmetic is deterministic | Avoids LLM date errors; runway uses the user's local calendar date |
 | Research lands in evidence, not chat dumps | Keeps the conversation readable while still grounding recommendations |
 | Session-only state | Fits a focused review tool without accounts or stored customer data |
 | Scoped to one tool per review | Prevents whole-stack sprawl; overlap is discussed only as it affects the renewal |
@@ -108,17 +104,32 @@ Sessions are **not saved** after the tab closes. Organizational approval stays w
 |-------|------------|
 | Framework | Next.js 16 (App Router) |
 | UI | React 19, TypeScript, Tailwind CSS 4 |
-| LLM | OpenAI API (role-separated models for chat, extraction, research, and assessment) |
+| LLM | OpenAI API. See models below. |
 | Streaming | Server-streamed responses into the chat UI |
 | Markdown | `react-markdown` |
 | Quality | ESLint, focused Node test suites for deadline, commercial-term, assessment, and research-merge behavior |
 | Deploy | Vercel |
 
+## Models
+
+The app calls the OpenAI API from the server. The API key stays on the server. Model IDs are environment configuration, not hardcoded, so they can change when OpenAI ships a new generation. The live site currently uses two models, assigned by job:
+
+| Job | Model | Reasoning effort |
+|-----|--------|------------------|
+| Chat / intake | `gpt-6.1-sol` | `low` |
+| Background web research | `gpt-6.1-sol` | `low` |
+| Formal assessment | `gpt-6.1-sol` | `medium` (API default) |
+| Evidence extraction | `gpt-6-luna` | `medium` (API default) |
+
+On the current OpenAI ladder, Luna (`gpt-6-luna`) is the least expensive and fastest. Sol (`gpt-6.1-sol`) is the middle model, near Astra quality at lower cost. Astra (`gpt-6-astra`) is the slowest, smartest, and most expensive, and this product does not use it. There is no GPT-6 Terra. Reasoning effort is a separate dial from the model. Lower effort favors speed and cost.
+
+Chat and assessment responses stream into the page. Extraction and research run beside the conversation and write into the evidence record. Research is not pasted into the chat. Notice deadlines, runway, and renewal-price math stay in application code, so the model is not doing the date or percentage arithmetic. The footer on the live site names the models in use.
+
 ---
 
 ## Product principles (summary)
 
-- Help a leader decide on **an existing tool’s renewal**, not redesign their entire stack.
+- Help a leader decide on **an existing tool's renewal**, not redesign their entire stack.
 - Prefer business value, total cost, operating capacity, and feasible next actions over architecture labels or feature checklists.
 - Ask follow-ups only when answers could materially change the recommendation.
 - Be explicit about assumptions, unknowns, and provisional status.
@@ -128,8 +139,8 @@ Sessions are **not saved** after the tab closes. Organizational approval stays w
 
 ## Portfolio note
 
-Source code, prompts, and detailed decision methodology are proprietary and are not included in this showcase.
+Source code, prompts, and the detailed decision methodology are private.
 
-This README was drafted with AI from the product and codebase, then reviewed by a human. Treat this as AI-assisted copy, not entirely human-written.
+I set the product direction: who it is for, what a useful renewal recommendation has to include, and how the conversation should behave. I did not write the application by hand. The code, prompts, and this write-up were produced with AI coding tools, then reviewed by me.
 
 **Try the live app:** [therenewalsdesk.com](https://www.therenewalsdesk.com)
