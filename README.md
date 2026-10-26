@@ -33,7 +33,7 @@ Renewal decisions are hard when evidence is incomplete and spread across Marketi
    - Action plan with owners and next steps
 6. **Revision.** New evidence updates the recommendation; older assessments are superseded in the thread.
 
-Sessions are **not saved** after the tab closes. Organizational approval stays with the user. A public [Privacy and Data](https://www.therenewalsdesk.com/privacy) page explains handling: OpenAI processes messages to run the product; data is not used to train OpenAI models; OpenAI API call logging is disabled for this product; the website does not use cookies, tracking, or analytics. OpenAI may still keep separate abuse-monitoring logs for up to about 30 days.
+Sessions are **not saved** after the tab closes. Organizational approval stays with the user. A public [Privacy and Data](https://www.therenewalsdesk.com/privacy) page explains handling: OpenAI processes messages to run the product; data is not used to train OpenAI models; OpenAI API call logging is additionally disabled, so conversation content is not retained in any OpenAI account logs; the website does not use cookies, tracking, or analytics. OpenAI may still keep separate abuse-monitoring logs for up to about 30 days.
 
 ---
 
@@ -112,7 +112,7 @@ Sessions are **not saved** after the tab closes. Organizational approval stays w
 
 ## Models
 
-The app calls the OpenAI API from the server. The API key stays on the server. Model IDs are environment configuration, not hardcoded, so they can change when OpenAI ships a new generation. API requests set `store: false`, and OpenAI API call logging is disabled for the product account, so conversation content is not retained in OpenAI account logs used for review or evaluation. The live site currently uses two models, assigned by job:
+The app calls the OpenAI API from the server. The API key stays on the server. Model IDs are environment configuration, not hardcoded, so they can change when OpenAI ships a new generation. API requests set `store: false`, and OpenAI API call logging is additionally disabled, so conversation content is not retained in any OpenAI account logs. The live site currently uses two models, assigned by job:
 
 | Job | Model | Reasoning effort |
 |-----|--------|------------------|
