@@ -8,7 +8,7 @@ This repository is a **portfolio showcase** (product narrative and architecture)
 
 ![The Renewals Desk opening screen: the wordmark, the opening question, the reply box, and a footer naming the builder and the OpenAI models in use](docs/landing.png)
 
-One question to start. The desk asks for the company website and the tool under review. Public research on the company and the vendor runs in the background at set points in the review. Those findings go into the evidence record. They are not pasted into the chat.
+One question to start. The opening explains that this is a short contract renewal review: a few groups of questions, then a written assessment. It asks which company and which tool are under review, and lets someone continue without naming the company. Public research on the company and the vendor runs in the background at set points in the review. Those findings go into the evidence record. They are not pasted into the chat.
 
 ![An intake conversation: the desk asks what the tool is used for and what prompted the review, then asks about cost, contract end date, auto-renewal and notice, and who holds approval authority](docs/conversation.png)
 
@@ -22,7 +22,7 @@ Renewal decisions are hard when evidence is incomplete and spread across Marketi
 
 ## What it does
 
-1. **Intake conversation.** Asks for the company (or website) and the tool under review, then gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context through consequential follow-ups (typed or pasted text only; no file uploads).
+1. **Intake conversation.** Opens as a short contract renewal review, asks for the company and the tool under review (company name optional), then gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context through consequential follow-ups in labeled topic groups (typed or pasted text only; no file uploads).
 2. **Structured evidence.** Maintains an in-session evidence record with value, source, and state (answered, unknown, conflicting, not yet asked). Does not invent missing contract terms.
 3. **Public research.** At defined milestones, researches the company and the vendor/product into the evidence record (with sources), without dumping research into the chat.
 4. **Deterministic deadline math.** Calculates notice deadlines and runway in application code (not via the language model), and surfaces timing when it materially matters.
@@ -33,7 +33,7 @@ Renewal decisions are hard when evidence is incomplete and spread across Marketi
    - Action plan with owners and next steps
 6. **Revision.** New evidence updates the recommendation; older assessments are superseded in the thread.
 
-Sessions are **not saved** after the tab closes. Organizational approval stays with the user.
+Sessions are **not saved** after the tab closes. Organizational approval stays with the user. A public [Privacy and Data](https://www.therenewalsdesk.com/privacy) page explains handling: OpenAI processes messages to run the product; data is not used to train OpenAI models; OpenAI API call logging is disabled for this product; the website does not use cookies, tracking, or analytics. OpenAI may still keep separate abuse-monitoring logs for up to about 30 days.
 
 ---
 
@@ -112,16 +112,16 @@ Sessions are **not saved** after the tab closes. Organizational approval stays w
 
 ## Models
 
-The app calls the OpenAI API from the server. The API key stays on the server. Model IDs are environment configuration, not hardcoded, so they can change when OpenAI ships a new generation. The live site currently uses two models, assigned by job:
+The app calls the OpenAI API from the server. The API key stays on the server. Model IDs are environment configuration, not hardcoded, so they can change when OpenAI ships a new generation. API requests set `store: false`, and OpenAI API call logging is disabled for the product account, so conversation content is not retained in OpenAI account logs used for review or evaluation. The live site currently uses two models, assigned by job:
 
 | Job | Model | Reasoning effort |
 |-----|--------|------------------|
-| Chat / intake | `gpt-6.1-sol` | `low` |
-| Background web research | `gpt-6.1-sol` | `low` |
-| Formal assessment | `gpt-6.1-sol` | `medium` (API default) |
-| Evidence extraction | `gpt-6-luna` | `medium` (API default) |
+| Chat / intake | GPT-6.1 Sol (`gpt-6.1-sol`) | `low` |
+| Background web research | GPT-6.1 Sol (`gpt-6.1-sol`) | `low` |
+| Formal assessment | GPT-6.1 Sol (`gpt-6.1-sol`) | `medium` (API default) |
+| Evidence extraction | GPT-6 Luna (`gpt-6-luna`) | `medium` (API default) |
 
-On the current OpenAI ladder, Luna (`gpt-6-luna`) is the least expensive and fastest. Sol (`gpt-6.1-sol`) is the middle model, near Astra quality at lower cost. Astra (`gpt-6-astra`) is the slowest, smartest, and most expensive, and this product does not use it. There is no GPT-6 Terra. Reasoning effort is a separate dial from the model. Lower effort favors speed and cost.
+On the current OpenAI ladder, Luna (GPT-6 Luna) is the least expensive and fastest. Sol (GPT-6.1 Sol) is the middle model, near Astra quality at lower cost. Astra (GPT-6 Astra) is the slowest, smartest, and most expensive, and this product does not use it. There is no GPT-6 Terra. Reasoning effort is a separate dial from the model. Lower effort favors speed and cost.
 
 Chat and assessment responses stream into the page. Extraction and research run beside the conversation and write into the evidence record. Research is not pasted into the chat. Notice deadlines, runway, and renewal-price math stay in application code, so the model is not doing the date or percentage arithmetic. The footer on the live site names the models in use.
 
