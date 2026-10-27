@@ -2,48 +2,63 @@
 
 **Live product:** [https://www.therenewalsdesk.com](https://www.therenewalsdesk.com)
 
-A focused web chatbot that helps marketing operations and martech leaders decide what to do about **one** SaaS renewal at a time. It turns scattered ownership, usage, cost, dependency, and contract facts into a short, decision-ready assessment with a clear next step.
+The Renewals Desk helps marketing operations and martech leaders decide what to do about one SaaS or marketing technology renewal at a time. Someone reviewing a tool brings the ownership, usage, cost, dependency, and contract facts they have. The desk asks focused follow-ups, then writes a short assessment with a clear next step.
 
-This repository is a **portfolio showcase** (product narrative and architecture). Application source code is private.
+The line on the page: An AI-powered assistant for marketing technology leaders deciding whether to renew, replace, or deprecate a tool or platform in their stack.
 
-![The Renewals Desk opening screen: the wordmark, the opening question, the reply box, and a footer naming the builder and the OpenAI models in use](docs/landing.png)
+This repository is the public portfolio showcase: the product narrative and the architecture. The application source is private.
 
-One question to start. The opening explains that this is a short contract renewal review: a few questions, then a written assessment. It asks which company and which tool are under review, and lets someone continue without naming the company. Public research on the company and the vendor runs in the background at set points in the review. Those findings go into the evidence record. They are not pasted into the chat.
+![The Renewals Desk opening screen: the wordmark, the tagline "An AI-powered assistant for marketing technology leaders deciding whether to renew, replace, or deprecate a tool or platform in their stack", and the opening question asking which tool is under review and which company the user works for](docs/landing.png)
 
-![An intake conversation: the desk asks what the tool is used for and what prompted the review, then asks about cost, contract end date, auto-renewal and notice, and who holds approval authority](docs/conversation.png)
+The opening message is a thorough contract renewal review: focused questions, then a written assessment, starting with which tool is under review and which company the user works for. It notes that public employer information like size and industry helps tailor the review. Naming the employer is optional. At set milestones the desk looks up the employer and the vendor from public sources, and keeps asking for what still needs a human answer.
 
-Intake asks only what could change the recommendation, and follows up on the answers rather than working through a fixed form. Commercial arithmetic is done in application code, not by the model. In this example a quoted 22% increase becomes the renewal figure. The company is fictional.
+![An intake conversation: the desk asks what the tool is used for and what prompted the review, then asks about cost, contract end date, automatic renewal, and notice](docs/conversation.png)
+
+Questions follow the answers that could change the recommendation. Notice deadlines and the related commercial figures are calculated in application code. The company in the screenshot is fictional.
 
 ---
 
 ## Problem
 
-Renewal decisions are hard when evidence is incomplete and spread across Marketing Ops, IT, Finance, Procurement, and Legal. Feature overlap alone does not prove a tool can be removed safely. Leaders need a timely recommendation that is honest about confidence, tradeoffs, and what still needs to be confirmed.
+A renewal is difficult to call when the evidence is incomplete and split across Marketing Ops, IT, Finance, Procurement, and Legal. Overlapping features, on their own, do not show that a tool can come out safely. The person making the decision needs a timely recommendation that is plain about confidence, tradeoffs, and what still has to be confirmed.
 
 ## What it does
 
-1. **Intake conversation.** Opens as a short contract renewal review, asks for the company and the tool under review (company name optional), then gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context through consequential follow-ups in labeled topic groups (typed or pasted text only; no file uploads).
-2. **Structured evidence.** Maintains an in-session evidence record with value, source, and state (answered, unknown, conflicting, not yet asked). Does not invent missing contract terms.
-3. **Public research.** At defined milestones, researches the company and the vendor/product into the evidence record (with sources), without dumping research into the chat.
-4. **Deterministic deadline math.** Calculates notice deadlines and runway in application code (not via the language model), and surfaces timing when it materially matters.
-5. **Formal assessment.** A separate assessment pass produces a compact write-up:
-   - Immediate contract action (renew, renegotiate, extend, defer, or do not renew)
-   - Longer-term direction (retain, sunset, consolidate, or investigate further)
-   - Reasoning and evidence (supported, provisional, or insufficient information)
-   - Action plan with owners and next steps
-6. **Revision.** New evidence updates the recommendation; older assessments are superseded in the thread.
+The work runs in separate passes: chat intake, evidence extraction, milestone research, and a formal assessment.
 
-Sessions are **not saved** after the tab closes. Organizational approval stays with the user. A public [Privacy and Data](https://www.therenewalsdesk.com/privacy) page explains handling: OpenAI processes messages to run the product; data is not used to train OpenAI models; OpenAI API call logging is additionally disabled, so conversation content is not retained in any OpenAI account logs; the website does not use cookies, tracking, or analytics. OpenAI may still keep separate abuse-monitoring logs for up to about 30 days.
+1. **Intake conversation.** The chat opens with this:
+
+   > This is a thorough contract renewal review. Focused questions, then a written assessment. To start: which tool are we reviewing, and which company do you work for? Public information about your employer, like its size and industry, helps tailor the review. If you would rather not name your employer, say so.
+
+   Naming the employer is optional. From there the desk gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context. A follow-up is asked when the answer could change the recommendation. Answers are typed or pasted text.
+
+2. **Structured evidence.** The session holds an evidence record. Each fact has a value, a source, and a state: answered, unknown, conflicting, or not yet asked. A contract term that was never supplied stays unknown.
+
+3. **Public research.** At defined milestones the desk researches the company and the vendor or product, and writes the findings into the evidence record with sources. The chat stays a conversation.
+
+4. **Deadline math.** Notice deadlines and runway are calculated in deterministic application code, using the user's local calendar date, and shown when the timing matters. The language model does not do that arithmetic.
+
+5. **Formal assessment.** A separate assessment pass writes a compact review:
+   - **Immediate contract action:** renew, renegotiate, seek an extension, defer, or do not renew
+   - **Longer-term direction:** retain, sunset, consolidate, or investigate further
+   - **Reasoning and evidence:** the case for the call, with a status of supported, provisional, or insufficient information
+   - **Action plan:** owners and next steps
+
+6. **Revision.** New evidence updates the recommendation. Older assessments in the thread are marked superseded.
+
+The session is not saved after the tab closes. Organizational approval stays with the person using the desk.
+
+**Privacy.** The [Privacy and Data](https://www.therenewalsdesk.com/privacy) page describes what happens to a conversation in practice. Storage and logging are turned off for this site's OpenAI requests, so conversations are not kept in this site's OpenAI account, and OpenAI does not use API data to train its models. Under its standard API terms, OpenAI may still keep request content for up to 30 days for abuse monitoring. The site does not have a zero-retention arrangement with OpenAI. The site uses no cookies, tracking, or analytics.
 
 ---
 
-## Architecture (high level)
+## Architecture
 
 ```text
 ┌─────────────────────────────────────────────────────────┐
 │  Browser (Next.js App Router UI)                        │
 │  • Single-column chat shell                             │
-│  • In-memory session evidence + messages                │
+│  • In-memory session evidence and messages              │
 │  • Streams assistant replies and assessments            │
 └───────────────────────────┬─────────────────────────────┘
                             │
@@ -61,40 +76,40 @@ Sessions are **not saved** after the tab closes. Organizational approval stays w
 ┌─────────────────────────────────────────────────────────┐
 │  Domain logic                                           │
 │  • Evidence merge and conflict handling                 │
-│  • Commercial-term and notice-deadline calculation      │
-│  • Assessment readiness / handoff                       │
+│  • Commercial terms and notice-deadline calculation     │
+│  • Assessment readiness and handoff                     │
 │  • Role-separated model calls (chat, extract,           │
-│    research, assessment) via configuration              │
+│    research, assessment), chosen in configuration       │
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Design choices that matter for the product:**
+**Design choices that shape the product:**
 
 | Choice | Why |
 |--------|-----|
-| Intake and assessment are separate passes | Questions stay investigative; the formal write-up stays compact and consistent |
-| Deadline arithmetic is deterministic | Avoids LLM date errors; runway uses the user's local calendar date |
-| Research lands in evidence, not chat dumps | Keeps the conversation readable while still grounding recommendations |
-| Session-only state | Fits a focused review tool without accounts or stored customer data |
-| Scoped to one tool per review | Prevents whole-stack sprawl; overlap is discussed only as it affects the renewal |
+| Intake and assessment are separate passes | Questions stay investigative. The written assessment stays compact and consistent. |
+| Deadline arithmetic is deterministic | Date math runs in application code, on the user's local calendar date. |
+| Research lands in the evidence record | The conversation stays readable, and the recommendation still has sources. |
+| Session-only state | One review in the open tab, with no account and no saved transcript. |
+| One tool per review | The conversation stays on that renewal. Overlap comes up when it changes the call. |
 
 ---
 
 ## Features
 
-- Focused renewal chatbot for B2B marketing technology decisions
-- Warm, desk-inspired UI (mahogany / ivory) with clear brand hierarchy
-- Streaming responses for chat and assessment
-- Markdown rendering for readable assistant replies
-- In-session structured evidence across intake categories
-- Milestone-based company and vendor web research with sources
-- Application-calculated notice deadline and runway when timing is known
-- Four-section assessment with copy-to-clipboard
-- Clear recommendation confidence: supported, provisional, or insufficient information
-- Safeguards against inventing contract terms, overstating utilization as low value, and consolidating without workflow and capacity checks
-- Public API rate limiting oriented at bots, not normal human use
+- A renewal conversation for one B2B marketing technology decision
+- A warm desk palette (mahogany and ivory) and a clear brand hierarchy
+- Streamed replies for chat and for the assessment
+- Markdown rendering for assistant replies
+- An in-session evidence record across the intake categories
+- Company and vendor research at milestones, stored with sources
+- A notice deadline and runway from application code when the inputs are known
+- A four-section assessment with copy to clipboard
+- A plain status on the recommendation: supported, provisional, or insufficient information
+- Safeguards on invented contract terms, on reading low utilization as low value, and on consolidation before workflow and capacity are checked
+- Bot-focused rate limits on the public API routes, high enough for a person reviewing many tools
 
-**Out of scope (by design):** file uploads, live account connectors, vendor outreach, contract execution, whole-stack audits, and replacing human organizational approval.
+**Outside the product:** file uploads, live account connectors, vendor outreach, contract execution, whole-stack audits, and replacing organizational approval.
 
 ---
 
@@ -104,43 +119,28 @@ Sessions are **not saved** after the tab closes. Organizational approval stays w
 |-------|------------|
 | Framework | Next.js 16 (App Router) |
 | UI | React 19, TypeScript, Tailwind CSS 4 |
-| LLM | OpenAI API. See models below. |
-| Streaming | Server-streamed responses into the chat UI |
+| Models | OpenAI API. Chat, research, and assessment use GPT-6.1 Sol. Extraction uses GPT-6 Luna. GPT-6 Astra is unused unless chosen for a role. Reasoning effort is a separate dial. Requests set `store: false`. |
+| Streaming | Server-streamed responses into the chat |
 | Markdown | `react-markdown` |
-| Quality | ESLint, focused Node test suites for deadline, commercial-term, assessment, and research-merge behavior |
+| Quality | ESLint, and Node tests for deadlines, commercial terms, assessment copy, and research merge |
 | Deploy | Vercel |
-
-## Models
-
-The app calls the OpenAI API from the server. The API key stays on the server. Model IDs are environment configuration, not hardcoded, so they can change when OpenAI ships a new generation. API requests set `store: false`, and OpenAI API call logging is additionally disabled, so conversation content is not retained in any OpenAI account logs. The live site currently uses two models, assigned by job:
-
-| Job | Model | Reasoning effort |
-|-----|--------|------------------|
-| Chat / intake | GPT-6.1 Sol (`gpt-6.1-sol`) | `low` |
-| Background web research | GPT-6.1 Sol (`gpt-6.1-sol`) | `low` |
-| Formal assessment | GPT-6.1 Sol (`gpt-6.1-sol`) | `medium` (API default) |
-| Evidence extraction | GPT-6 Luna (`gpt-6-luna`) | `medium` (API default) |
-
-On the current OpenAI ladder, Luna (GPT-6 Luna) is the least expensive and fastest. Sol (GPT-6.1 Sol) is the middle model, near Astra quality at lower cost. Astra (GPT-6 Astra) is the slowest, smartest, and most expensive, and this product does not use it. There is no GPT-6 Terra. Reasoning effort is a separate dial from the model. Lower effort favors speed and cost.
-
-Chat and assessment responses stream into the page. Extraction and research run beside the conversation and write into the evidence record. Research is not pasted into the chat. Notice deadlines, runway, and renewal-price math stay in application code, so the model is not doing the date or percentage arithmetic. The footer on the live site names the models in use.
 
 ---
 
-## Product principles (summary)
+## Product principles
 
-- Help a leader decide on **an existing tool's renewal**, not redesign their entire stack.
-- Prefer business value, total cost, operating capacity, and feasible next actions over architecture labels or feature checklists.
-- Ask follow-ups only when answers could materially change the recommendation.
-- Be explicit about assumptions, unknowns, and provisional status.
+- Help a leader decide on one existing tool's renewal.
+- Weigh business value, total cost, operating capacity, and a feasible next action ahead of architecture labels or a feature checklist.
+- Ask a follow-up only when the answer could materially change the recommendation.
+- State assumptions, unknowns, and a provisional status in everyday language.
 - Keep the assessment short enough to read in about a minute.
 
 ---
 
 ## Portfolio note
 
-Source code, prompts, and the detailed decision methodology are private.
+Source code, prompts, and the detailed decision method are proprietary. They are not in this showcase.
 
-I set the product direction: who it is for, what a useful renewal recommendation has to include, and how the conversation should behave. I did not write the application by hand. The code, prompts, and this write-up were produced with AI coding tools, then reviewed by me.
+Drafted with AI from the product and the codebase, then reviewed by a human. This is AI-assisted copy.
 
 **Try the live app:** [therenewalsdesk.com](https://www.therenewalsdesk.com)
