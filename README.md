@@ -14,7 +14,7 @@ The opening message is a thorough contract renewal review: focused questions, th
 
 ![An intake conversation: the desk asks what the tool is used for and what prompted the review, then asks about contract timing before cost](docs/conversation.png)
 
-Questions stay short: usually two distinct asks per reply, never more than three. Contract timing comes before cost. Notice deadlines and the related commercial figures are calculated in application code. The company in the screenshot is fictional.
+Questions stay short: usually two distinct asks per reply, never more than three. Contract timing comes before cost. Notice deadlines and the related commercial figures are calculated in application code. The company and tool in the screenshot are fictional.
 
 ---
 
@@ -28,9 +28,9 @@ The work runs in separate passes: chat intake, evidence extraction, milestone re
 
 1. **Intake conversation.** The chat opens with this:
 
-   > This is a thorough contract renewal review. Focused questions, then a written assessment. To start: which tool are we reviewing, and which company do you work for? Public information about your employer, like its size and industry, helps tailor the review. If you would rather not name your employer, say so.
+   > This is a thorough contract renewal review. Focused questions, then a written assessment. To start: which tool are we reviewing, and which company do you work for? Public information about your employer, like its size and industry, helps tailor the review. If you'd rather not name your employer, a rough size and industry works too, or you can skip it.
 
-   Naming the employer is optional. From there the desk gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context. Each reply defaults to two distinct asks and never exceeds three. Commercial timing (end date and auto-renew or notice) is asked before cost and seats. A follow-up is asked when the answer could change the recommendation. Answers are typed or pasted text.
+   Naming the employer is optional. A rough size and industry works too. From there the desk gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context. Each reply defaults to two distinct asks and never exceeds three. Commercial timing (end date and auto-renew or notice) is asked before cost and seats. A follow-up is asked when the answer could change the recommendation. Answers are typed or pasted text.
 
 2. **Structured evidence.** The session holds an evidence record. Each fact has a value, a source, and a state: answered, unknown, conflicting, or not yet asked. A contract term that was never supplied stays unknown. Extract and research updates run one at a time from the latest committed record, so fast replies do not overwrite earlier facts before the assessment.
 
