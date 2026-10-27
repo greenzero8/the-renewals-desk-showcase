@@ -8,13 +8,13 @@ The line on the page: An AI-powered assistant for marketing technology leaders d
 
 This repository is the public portfolio showcase: the product narrative and the architecture. The application source is private.
 
-![The Renewals Desk opening screen: the wordmark, the tagline "An AI-powered assistant for marketing technology leaders deciding whether to renew, replace, or deprecate a tool or platform in their stack", and the opening question asking which tool is under review and which company the user works for](docs/landing.png)
+![The Renewals Desk opening screen: the wordmark, the tagline "An AI-powered assistant for marketing technology leaders deciding whether to renew, replace, or deprecate a tool or platform in their stack", and the opening question asking which tool is under review, with an optional invite for industry and approximate employee count](docs/landing.png)
 
-The opening message is a thorough contract renewal review: focused questions, then a written assessment, starting with which tool is under review and which company the user works for. It notes that public employer information like size and industry helps tailor the review. Naming the employer is optional. At set milestones the desk looks up the employer and the vendor from public sources, and keeps asking for what still needs a human answer.
+The opening message is a thorough contract renewal review: focused questions, then a written assessment, starting with which tool is under review. The user may optionally share industry and approximate employee count. The desk does not ask for a company name or website, and it does not look up the user's employer. Vendor research is the only public web lookup, and it runs after use cases and any overlap candidate are known.
 
-![An intake conversation: the desk asks what the tool is used for and what prompted the review, then asks about contract timing before cost](docs/conversation.png)
+![An intake conversation: the desk confirms a fictional tool, asks what the team uses it for and what prompted the review, then asks about contract timing before cost](docs/conversation.png)
 
-Questions stay short: usually two distinct asks per reply, never more than three. Contract timing comes before cost. Notice deadlines and the related commercial figures are calculated in application code. The company and tool in the screenshot are fictional.
+Questions stay short: usually two distinct asks per reply, never more than three. Contract timing comes before cost. Notice deadlines and the related commercial figures are calculated in application code. The tool in the screenshot is fictional. No company name appears.
 
 ---
 
@@ -24,25 +24,27 @@ A renewal is difficult to call when the evidence is incomplete and split across 
 
 ## What it does
 
-The work runs in separate passes: chat intake, evidence extraction, milestone research, and a formal assessment.
+The work runs in separate passes: chat intake, evidence extraction, vendor research, and a formal assessment.
 
 1. **Intake conversation.** The chat opens with this:
 
-   > This is a thorough contract renewal review. Focused questions, then a written assessment. To start: which tool are we reviewing, and which company do you work for? Public information about your employer, like its size and industry, helps tailor the review. If you'd rather not name your employer, a rough size and industry works too, or you can skip it.
+   > This is a thorough contract renewal review where you'll be asked focused questions and then given a written assessment. Which tool are we reviewing? If you'd like, share your company's industry and approximate employee count to help tailor the review.
 
-   Naming the employer is optional. A rough size and industry works too. From there the desk gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context. Each reply defaults to two distinct asks and never exceeds three. Commercial timing (end date and auto-renew or notice) is asked before cost and seats. A follow-up is asked when the answer could change the recommendation. Answers are typed or pasted text.
+   Industry and size are optional and stored as user-stated context. The desk does not ask for an employer name or website, and it does not research the user's company. From there it gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context. Each reply defaults to two distinct asks and never exceeds three. Commercial timing (end date and auto-renew or notice) is asked before cost and seats. Later turns go straight to a short topic label without restating the previous answer. A follow-up is asked when the answer could change the recommendation. Answers are typed or pasted text.
 
 2. **Structured evidence.** The session holds an evidence record. Each fact has a value, a source, and a state: answered, unknown, conflicting, or not yet asked. A contract term that was never supplied stays unknown. Extract and research updates run one at a time from the latest committed record, so fast replies do not overwrite earlier facts before the assessment.
 
-3. **Public research.** At defined milestones the desk researches the company and the vendor or product, and writes the findings into the evidence record with sources. The chat stays a conversation.
+3. **Vendor research.** Once use cases and any overlap candidate are known, the desk researches current public product capabilities and writes the findings into the evidence record with sources. It does not look up the buyer's company. The chat stays a conversation.
 
 4. **Deadline math.** Notice deadlines and runway are calculated in deterministic application code, using the user's local calendar date, and shown when the timing matters. The language model does not do that arithmetic.
 
-5. **Formal assessment.** A separate assessment pass writes a compact review:
+5. **Handoff and formal assessment.** When intake is ready, the chat handoff is one short sentence (for example, "Thanks, that's everything I need. I'll write up the assessment now."). A separate assessment pass then writes a compact review:
    - **Immediate contract action:** renew, renegotiate, seek an extension, defer, or do not renew
    - **Longer-term direction:** retain, sunset, consolidate, or investigate further
    - **Reasoning and evidence:** the case for the call, with a status of supported, provisional, or insufficient information
    - **Action plan:** owners and next steps
+
+   Copy assessment pastes formatted text (headings and lists) suitable for another document. There is no trailing Sources list.
 
 6. **Revision.** New evidence updates the recommendation. Older assessments in the thread are marked superseded.
 
@@ -68,7 +70,7 @@ The session is not saved after the tab closes. Organizational approval stays wit
 │  API layer                                              │
 │  • Chat          → streaming intake replies             │
 │  • Extract       → structured evidence updates          │
-│  • Research      → milestone company / vendor research  │
+│  • Research      → vendor / product capability research │
 │  • Assess        → streaming formal assessment          │
 │  • Bot-focused rate limits on public API routes         │
 └───────────────────────────┬─────────────────────────────┘
@@ -91,7 +93,7 @@ The session is not saved after the tab closes. Organizational approval stays wit
 | Intake and assessment are separate passes | Questions stay investigative. The written assessment stays compact and consistent. |
 | Short ask groups, timing before cost | Usually two asks per reply, never more than three. Contract timing is asked before spend. |
 | Deadline arithmetic is deterministic | Date math runs in application code, on the user's local calendar date. |
-| Research lands in the evidence record | The conversation stays readable, and the recommendation still has sources. |
+| Vendor research lands in the evidence record | The conversation stays readable, and the recommendation still has sources. The buyer's company is not researched. |
 | Background evidence updates are serial | Fast pasted answers still land in the record before the assessment runs. |
 | Session-only state | One review in the open tab, with no account and no saved transcript. |
 | One tool per review | The conversation stays on that renewal. Overlap comes up when it changes the call. |
@@ -105,14 +107,16 @@ The session is not saved after the tab closes. Organizational approval stays wit
 - Streamed replies for chat and for the assessment
 - Markdown rendering for assistant replies
 - An in-session evidence record across the intake categories
-- Company and vendor research at milestones, stored with sources
+- Optional industry and size as user-stated context, with no company lookup
+- Vendor research at milestones, stored with sources
 - A notice deadline and runway from application code when the inputs are known
-- A four-section assessment with copy to clipboard
+- A one-sentence handoff into the formal assessment
+- A four-section assessment with formatted copy to clipboard
 - A plain status on the recommendation: supported, provisional, or insufficient information
 - Safeguards on invented contract terms, on reading low utilization as low value, and on consolidation before workflow and capacity are checked
 - Bot-focused rate limits on the public API routes, high enough for a person reviewing many tools
 
-**Outside the product:** file uploads, live account connectors, vendor outreach, contract execution, whole-stack audits, and replacing organizational approval.
+**Outside the product:** file uploads, live account connectors, vendor outreach, contract execution, whole-stack audits, employer research, and replacing organizational approval.
 
 ---
 
@@ -122,7 +126,7 @@ The session is not saved after the tab closes. Organizational approval stays wit
 |-------|------------|
 | Framework | Next.js 16 (App Router) |
 | UI | React 19, TypeScript, Tailwind CSS 4 |
-| Models | OpenAI API. Chat, research, and assessment use GPT-6.1 Sol. Extraction uses GPT-6 Luna. GPT-6 Astra is unused unless chosen for a role. Reasoning effort is a separate dial. Requests set `store: false`. |
+| Models | OpenAI API. Chat and research use GPT-6.1 Terra at medium reasoning effort. Assessment uses GPT-6.1 Sol. Extraction uses GPT-6 Luna. GPT-6 Astra is unused unless chosen for a role. Reasoning effort is a separate dial. Requests set `store: false`. |
 | Streaming | Server-streamed responses into the chat |
 | Markdown | `react-markdown` |
 | Quality | ESLint, and Node tests for deadlines, commercial terms, assessment copy, research merge, and serial background evidence updates |
