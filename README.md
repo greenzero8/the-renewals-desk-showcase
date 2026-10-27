@@ -12,9 +12,9 @@ This repository is the public portfolio showcase: the product narrative and the 
 
 The opening message is a thorough contract renewal review: focused questions, then a written assessment, starting with which tool is under review and which company the user works for. It notes that public employer information like size and industry helps tailor the review. Naming the employer is optional. At set milestones the desk looks up the employer and the vendor from public sources, and keeps asking for what still needs a human answer.
 
-![An intake conversation: the desk asks what the tool is used for and what prompted the review, then asks about cost, contract end date, automatic renewal, and notice](docs/conversation.png)
+![An intake conversation: the desk asks what the tool is used for and what prompted the review, then asks about contract timing before cost](docs/conversation.png)
 
-Questions follow the answers that could change the recommendation. Notice deadlines and the related commercial figures are calculated in application code. The company in the screenshot is fictional.
+Questions stay short: usually two distinct asks per reply, never more than three. Contract timing comes before cost. Notice deadlines and the related commercial figures are calculated in application code. The company in the screenshot is fictional.
 
 ---
 
@@ -30,9 +30,9 @@ The work runs in separate passes: chat intake, evidence extraction, milestone re
 
    > This is a thorough contract renewal review. Focused questions, then a written assessment. To start: which tool are we reviewing, and which company do you work for? Public information about your employer, like its size and industry, helps tailor the review. If you would rather not name your employer, say so.
 
-   Naming the employer is optional. From there the desk gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context. A follow-up is asked when the answer could change the recommendation. Answers are typed or pasted text.
+   Naming the employer is optional. From there the desk gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context. Each reply defaults to two distinct asks and never exceeds three. Commercial timing (end date and auto-renew or notice) is asked before cost and seats. A follow-up is asked when the answer could change the recommendation. Answers are typed or pasted text.
 
-2. **Structured evidence.** The session holds an evidence record. Each fact has a value, a source, and a state: answered, unknown, conflicting, or not yet asked. A contract term that was never supplied stays unknown.
+2. **Structured evidence.** The session holds an evidence record. Each fact has a value, a source, and a state: answered, unknown, conflicting, or not yet asked. A contract term that was never supplied stays unknown. Extract and research updates run one at a time from the latest committed record, so fast replies do not overwrite earlier facts before the assessment.
 
 3. **Public research.** At defined milestones the desk researches the company and the vendor or product, and writes the findings into the evidence record with sources. The chat stays a conversation.
 
@@ -59,6 +59,7 @@ The session is not saved after the tab closes. Organizational approval stays wit
 │  Browser (Next.js App Router UI)                        │
 │  • Single-column chat shell                             │
 │  • In-memory session evidence and messages              │
+│  • Serial background extract/research commits           │
 │  • Streams assistant replies and assessments            │
 └───────────────────────────┬─────────────────────────────┘
                             │
@@ -88,8 +89,10 @@ The session is not saved after the tab closes. Organizational approval stays wit
 | Choice | Why |
 |--------|-----|
 | Intake and assessment are separate passes | Questions stay investigative. The written assessment stays compact and consistent. |
+| Short ask groups, timing before cost | Usually two asks per reply, never more than three. Contract timing is asked before spend. |
 | Deadline arithmetic is deterministic | Date math runs in application code, on the user's local calendar date. |
 | Research lands in the evidence record | The conversation stays readable, and the recommendation still has sources. |
+| Background evidence updates are serial | Fast pasted answers still land in the record before the assessment runs. |
 | Session-only state | One review in the open tab, with no account and no saved transcript. |
 | One tool per review | The conversation stays on that renewal. Overlap comes up when it changes the call. |
 
@@ -122,7 +125,7 @@ The session is not saved after the tab closes. Organizational approval stays wit
 | Models | OpenAI API. Chat, research, and assessment use GPT-6.1 Sol. Extraction uses GPT-6 Luna. GPT-6 Astra is unused unless chosen for a role. Reasoning effort is a separate dial. Requests set `store: false`. |
 | Streaming | Server-streamed responses into the chat |
 | Markdown | `react-markdown` |
-| Quality | ESLint, and Node tests for deadlines, commercial terms, assessment copy, and research merge |
+| Quality | ESLint, and Node tests for deadlines, commercial terms, assessment copy, research merge, and serial background evidence updates |
 | Deploy | Vercel |
 
 ---
@@ -131,7 +134,7 @@ The session is not saved after the tab closes. Organizational approval stays wit
 
 - Help a leader decide on one existing tool's renewal.
 - Weigh business value, total cost, operating capacity, and a feasible next action ahead of architecture labels or a feature checklist.
-- Ask a follow-up only when the answer could materially change the recommendation.
+- Ask a follow-up only when the answer could materially change the recommendation. Keep each reply to a few distinct asks, and put contract timing ahead of cost.
 - State assumptions, unknowns, and a provisional status in everyday language.
 - Keep the assessment short enough to read in about a minute.
 
