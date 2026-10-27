@@ -8,7 +8,7 @@ This repository is a **portfolio showcase** (product narrative and architecture)
 
 ![The Renewals Desk opening screen: the wordmark, the opening question, the reply box, and a footer naming the builder and the OpenAI models in use](docs/landing.png)
 
-One question to start. The opening explains that this is a short contract renewal review: a few groups of questions, then a written assessment. It asks which company and which tool are under review, and lets someone continue without naming the company. Public research on the company and the vendor runs in the background at set points in the review. Those findings go into the evidence record. They are not pasted into the chat.
+One question to start. The opening explains that this is a short contract renewal review: a few questions, then a written assessment. It asks which company and which tool are under review, and lets someone continue without naming the company. Public research on the company and the vendor runs in the background at set points in the review. Those findings go into the evidence record. They are not pasted into the chat.
 
 ![An intake conversation: the desk asks what the tool is used for and what prompted the review, then asks about cost, contract end date, auto-renewal and notice, and who holds approval authority](docs/conversation.png)
 
