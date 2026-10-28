@@ -127,10 +127,10 @@ The session is not saved after the tab closes. Organizational approval stays wit
 |-------|------------|
 | Framework | Next.js 16 (App Router) |
 | UI | React 19, TypeScript, Tailwind CSS 4 |
-| Models | OpenAI API. Chat uses GPT-6.1 Terra at high reasoning effort. Research uses GPT-6.1 Terra at medium. Extraction uses GPT-6.1 Terra and assessment uses GPT-6.1 Sol, both at the API default of medium. GPT-6 Astra is unused unless chosen for a role. Reasoning effort is a separate dial. Requests set `store: false`. |
+| Models | OpenAI API. Chat uses GPT-6.1 Terra at high reasoning effort. Research uses GPT-6.1 Terra at medium. Extraction uses GPT-6.1 Terra at API-default medium. Assessment uses GPT-6.1 Sol with configurable reasoning effort, currently medium, and a medium fallback. GPT-6 Astra is unused unless chosen for a role. Reasoning effort is a separate dial. Requests set `store: false`. |
 | Response display | Complete messages after generation, with a short fade-in. The composer stays available during background evidence work. |
 | Markdown | `react-markdown` |
-| Quality | ESLint and 82 automated tests covering deadline math, contract evidence, assessment copy, research merge, reconciliation, and serial background evidence updates |
+| Quality | ESLint and 87 automated tests covering deadline math, contract evidence, assessment copy, research merge, reconciliation, and serial background evidence updates |
 | Deploy | Vercel |
 
 ---
