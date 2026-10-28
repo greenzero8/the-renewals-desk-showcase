@@ -18,6 +18,12 @@ Questions stay short: usually two distinct asks per reply, never more than three
 
 ---
 
+## My role
+
+The Renewals Desk was my original idea, based on renewal decisions I have encountered in my marketing technology career: concerns about overpaying, pressure to justify investments, interest in new tools, and the need to simplify a growing stack. I wanted to turn those questions into a structured review grounded in business needs and evidence. I also built it to gain practical experience developing an AI assistant.
+
+I owned model selection and reasoning-effort decisions, drove the testing strategy, and tested and deployed model updates as the project evolved. I sought feedback from a user and colleagues with product management, design, and marketing technology experience, then incorporated that feedback into the product. I used AI assistance throughout development while retaining responsibility for those decisions and the resulting product.
+
 ## Problem
 
 A renewal is difficult to call when the evidence is incomplete and split across Marketing Ops, IT, Finance, Procurement, and Legal. Overlapping features, on their own, do not show that a tool can come out safely. The person making the decision needs a timely recommendation that is plain about confidence, tradeoffs, and what still has to be confirmed.
