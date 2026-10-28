@@ -32,11 +32,11 @@ The work runs in separate passes: chat intake, evidence extraction, vendor resea
 
    Industry and size are optional and stored as user-stated context. The desk does not ask for an employer name or website, and it does not research the user's company. From there it gathers purpose, ownership, commercial terms, usage, dependencies, overlap candidates, and vendor context. Each reply defaults to two distinct asks and never exceeds three. Commercial timing (end date and auto-renew or notice) is asked before cost and seats. Later turns go straight to a short topic label without restating the previous answer. A follow-up is asked when the answer could change the recommendation. Answers are typed or pasted text.
 
-2. **Structured evidence.** The session holds an evidence record. Each fact has a value, a source, and a state: answered, unknown, conflicting, or not yet asked. A contract term that was never supplied stays unknown. Extract and research updates run one at a time from the latest committed record, so fast replies do not overwrite earlier facts before the assessment.
+2. **Structured evidence.** The session holds an evidence record. Each fact has a value, a source, and a state: answered, user does not know, conflicting, or not yet asked. A contract term that was never supplied stays not yet asked; an answer the user cannot provide is recorded separately. Extract and research updates run one at a time from the latest committed record, so fast replies do not overwrite earlier facts before the assessment. Conflicting contract dates or notice terms remain unresolved until corrected. A calculated deadline stays separate from user-supplied evidence.
 
 3. **Vendor research.** Once use cases and any overlap candidate are known, the desk researches current public product capabilities and writes the findings into the evidence record with sources. It does not look up the buyer's company. The chat stays a conversation.
 
-4. **Deadline math.** Notice deadlines and runway are calculated in deterministic application code, using the user's local calendar date, and shown when the timing matters. The language model does not do that arithmetic.
+4. **Deadline math.** Notice deadlines and runway are calculated in deterministic application code, using the user's local calendar date, and shown when the timing matters. The language model does not do that arithmetic. The first reply with enough timing information includes the calculated deadline, even before background extraction finishes. A usage window is not treated as a notice period. Once Procurement or Legal is checking the terms with an expected response time, the desk avoids repeatedly asking for the same confirmation.
 
 5. **Handoff and formal assessment.** When intake is ready, the chat handoff is one short sentence (for example, "Thanks, that's everything I need. I'll write up the assessment now."). A separate assessment pass then writes a compact review:
    - **Immediate contract action:** renew, renegotiate, seek an extension, defer, or do not renew
@@ -44,7 +44,7 @@ The work runs in separate passes: chat intake, evidence extraction, vendor resea
    - **Reasoning and evidence:** the case for the call, with a status of supported, provisional, or insufficient information
    - **Action plan:** owners and next steps
 
-   Copy assessment pastes formatted text (headings and lists) suitable for another document. There is no trailing Sources list.
+   The assessment waits for pending evidence updates and vendor research. A final transcript check can fill required facts that extraction missed. Copy assessment pastes formatted text (headings and lists) suitable for another document. There is no trailing Sources list.
 
 6. **Revision.** New evidence updates the recommendation. Older assessments in the thread are marked superseded.
 
@@ -62,16 +62,17 @@ The session is not saved after the tab closes. Organizational approval stays wit
 │  • Single-column chat shell                             │
 │  • In-memory session evidence and messages              │
 │  • Serial background extract/research commits           │
-│  • Streams assistant replies and assessments            │
+│  • Displays complete replies and assessments            │
 └───────────────────────────┬─────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────┐
 │  API layer                                              │
-│  • Chat          → streaming intake replies             │
+│  • Chat          → complete intake replies              │
 │  • Extract       → structured evidence updates          │
 │  • Research      → vendor / product capability research │
-│  • Assess        → streaming formal assessment          │
+│  • Reconcile     → missing required-fact check          │
+│  • Assess        → formal assessment generation         │
 │  • Bot-focused rate limits on public API routes         │
 └───────────────────────────┬─────────────────────────────┘
                             │
@@ -104,7 +105,7 @@ The session is not saved after the tab closes. Organizational approval stays wit
 
 - A renewal conversation for one B2B marketing technology decision
 - A warm desk palette (mahogany and ivory) and a clear brand hierarchy
-- Streamed replies for chat and for the assessment
+- Complete replies and assessments revealed after a visible waiting state
 - Markdown rendering for assistant replies
 - An in-session evidence record across the intake categories
 - Optional industry and size as user-stated context, with no company lookup
@@ -126,10 +127,10 @@ The session is not saved after the tab closes. Organizational approval stays wit
 |-------|------------|
 | Framework | Next.js 16 (App Router) |
 | UI | React 19, TypeScript, Tailwind CSS 4 |
-| Models | OpenAI API. Chat and research use GPT-6.1 Terra at medium reasoning effort. Assessment uses GPT-6.1 Sol. Extraction uses GPT-6 Luna. GPT-6 Astra is unused unless chosen for a role. Reasoning effort is a separate dial. Requests set `store: false`. |
-| Streaming | Server-streamed responses into the chat |
+| Models | OpenAI API. Chat uses GPT-6.1 Terra at high reasoning effort. Research uses GPT-6.1 Terra at medium. Extraction uses GPT-6.1 Terra and assessment uses GPT-6.1 Sol, both at the API default of medium. GPT-6 Astra is unused unless chosen for a role. Reasoning effort is a separate dial. Requests set `store: false`. |
+| Response display | Complete messages after generation, with a short fade-in. The composer stays available during background evidence work. |
 | Markdown | `react-markdown` |
-| Quality | ESLint, and Node tests for deadlines, commercial terms, assessment copy, research merge, and serial background evidence updates |
+| Quality | ESLint and 82 automated tests covering deadline math, contract evidence, assessment copy, research merge, reconciliation, and serial background evidence updates |
 | Deploy | Vercel |
 
 ---
