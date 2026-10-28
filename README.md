@@ -127,6 +127,19 @@ The session is not saved after the tab closes. Organizational approval stays wit
 
 ---
 
+## Accessibility
+
+Accessibility work has focused on making the conversation easy to read and operate, with targeted browser checks and small interface improvements.
+
+- **Readable text and contrast.** Chat and assessment body text is 18 px, typed input is 20 px, and assessment section headings are 20 px at the default browser font setting. Comfortable line spacing and dark text on warm, light surfaces support reading. The main text and control-label color combinations checked exceeded the WCAG AA minimum contrast ratio of 4.5:1 for normal text.
+- **Keyboard use.** Chrome checks covered typing, Enter to send, Shift+Enter for a new line, scrolling through older messages and a long assessment, copying the assessment, and reaching footer links. The message box now has a visible keyboard-focus outline, alongside the existing outlines on buttons and links.
+- **Zoom and mobile layout.** Browser checks covered phone widths, enlarged text, and layouts equivalent to 200% and 400% desktop zoom. Older messages stayed in place when the input regained focus. Simulated keyboard viewports were also checked to see whether the input and Send button remained accessible.
+- **Reduced motion.** The interface respects the device's reduced-motion preference. Loading indicators become static, replies appear without a fade-in, and automatic scrolling uses instant movement. Chrome checks confirmed the behavior with the preference enabled and disabled.
+
+The chat checks used sample replies in an isolated browser session to exercise conversation and assessment states.
+
+---
+
 ## Tech stack
 
 | Layer | Technology |
@@ -134,7 +147,7 @@ The session is not saved after the tab closes. Organizational approval stays wit
 | Framework | Next.js 16 (App Router) |
 | UI | React 19, TypeScript, Tailwind CSS 4 |
 | Models | OpenAI API. Chat uses GPT-6.1 Terra at high reasoning effort. Research uses GPT-6.1 Terra at medium. Extraction and final evidence reconciliation use GPT-6.1 Terra with configurable reasoning effort through `OPENAI_EXTRACTION_REASONING_EFFORT`, currently medium, with an explicit medium fallback in application code. Assessment uses GPT-6.1 Sol with configurable reasoning effort, currently medium, and a medium fallback. GPT-6 Astra is unused unless chosen for a role. Reasoning effort is a separate dial. Requests set `store: false`. |
-| Response display | Complete messages after generation, with a short fade-in. The composer stays available during background evidence work. |
+| Response display | Complete messages after generation, with a short fade-in unless reduced motion is enabled. The composer stays available during background evidence work. |
 | Markdown | `react-markdown` |
 | Quality | ESLint and 109 automated tests covering deadline math, contract evidence, assessment copy, research merge, reconciliation, serial background evidence updates, reasoning-effort configuration, and native paste handling |
 | Deploy | Vercel |
